@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/RxAVKit.svg?style=flat)](https://cocoapods.org/pods/RxAVKit)
 [![Platform](https://img.shields.io/cocoapods/p/RxAVKit.svg?style=flat)](https://cocoapods.org/pods/RxAVKit)
 [![Xcode](https://img.shields.io/badge/Xcode-11.0-lightgray.svg?style=flat&logo=xcode)](https://itunes.apple.com/pl/app/xcode/id497799835?l=pl&mt=12)
-[![Swift 5.0](https://img.shields.io/badge/Swift-5.1-orange.svg?style=flat&logo=swift)](https://swift.org/)
+[![Swift 5.1](https://img.shields.io/badge/Swift-5.1-orange.svg?style=flat&logo=swift)](https://swift.org/)
 
 ## Requirements
 
@@ -17,7 +17,7 @@ Xcode 11, Swift 5.1
 
 RxAVKit is available through Swift Package Manager. To install it, add the following line to your `Package.swift` into dependencies:
 ```swift
-.package(url: "https://github.com/pawelrup/RxAVKit", .upToNextMinor(from: "1.0.0"))
+.package(url: "https://github.com/pawelrup/RxAVKit", .upToNextMinor(from: "1.1.0"))
 ```
 and then add `RxAVKit` to your target dependencies.
 
