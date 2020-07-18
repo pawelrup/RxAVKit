@@ -10,14 +10,15 @@ import AVKit
 import RxSwift
 import RxCocoa
 
-#if os(iOS)
+#if os(iOS) || os(tvOS) || os(macOS)
 
-@available(iOS 9.0, *)
+@available(tvOS 14.0, *)
 extension AVPictureInPictureController: HasDelegate {
+	public typealias RestoreUserInterfaceCompletionHandler = @convention(block) (Bool) -> Void
 	public typealias Delegate = AVPictureInPictureControllerDelegate
 }
 
-@available(iOS 9.0, *)
+@available(tvOS 14.0, *)
 private class RxAVPictureInPictureControllerDelegateProxy: DelegateProxy<AVPictureInPictureController, AVPictureInPictureControllerDelegate>, DelegateProxyType, AVPictureInPictureControllerDelegate {
 
 	public weak private (set) var view: AVPictureInPictureController?
@@ -32,45 +33,57 @@ private class RxAVPictureInPictureControllerDelegateProxy: DelegateProxy<AVPictu
 	}
 }
 
+@available(tvOS 14.0, *)
 extension Reactive where Base: AVPictureInPictureController {
 
 	public var delegate: DelegateProxy<AVPictureInPictureController, AVPictureInPictureControllerDelegate> {
-		return RxAVPictureInPictureControllerDelegateProxy.proxy(for: base)
+		RxAVPictureInPictureControllerDelegateProxy.proxy(for: base)
 	}
 
 	/// Tells the delegate when Picture in Picture is about to start.
-	@available(iOS 9.0, *)
 	public var willStartPictureInPicture: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerWillStartPictureInPicture(_:)))
+		delegate
+			.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerWillStartPictureInPicture(_:)))
 			.map { _ in () }
 	}
 
 	/// Tells the delegate when Picture in Picture playback has started.
-	@available(iOS 9.0, *)
 	public var didStartPictureInPicture: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerDidStartPictureInPicture(_:)))
+		delegate
+			.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerDidStartPictureInPicture(_:)))
 			.map { _ in () }
 	}
 
 	/// Tells the delegate if Picture in Picture failed to start.
-	@available(iOS 9.0, *)
 	public var failedToStartPictureInPictureWithError: Observable<AVError> {
-		return delegate.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureController(_:failedToStartPictureInPictureWithError:)))
-			.map { $0[1] as! AVError }
+		delegate
+			.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureController(_:failedToStartPictureInPictureWithError:)))
+			.compactMap { $0[1] as? AVError }
 	}
 
 	/// Tells the delegate when Picture in Picture is about to stop.
-	@available(iOS 9.0, *)
 	public var willStopPictureInPicture: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerWillStopPictureInPicture(_:)))
+		delegate
+			.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerWillStopPictureInPicture(_:)))
 			.map { _ in () }
 	}
 
 	/// Tells the delegate when Picture in Picture playback stops.
-	@available(iOS 9.0, *)
 	public var didStopPictureInPicture: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerDidStopPictureInPicture(_:)))
+		delegate
+			.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureControllerDidStopPictureInPicture(_:)))
 			.map { _ in () }
+	}
+	
+	/// Implement this method to restore the user interface before Picture in Picture stops.
+	public var restoreUserInterfaceForPictureInPictureStopWithCompletion: Observable<AVPictureInPictureController.RestoreUserInterfaceCompletionHandler> {
+		delegate
+			.methodInvoked(#selector(AVPictureInPictureControllerDelegate.pictureInPictureController(_:restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:)))
+			.map {
+				let blockPointer = UnsafeRawPointer(Unmanaged<AnyObject>.passUnretained($0[1] as AnyObject).toOpaque())
+				let handler = unsafeBitCast(blockPointer, to: AVPictureInPictureController.RestoreUserInterfaceCompletionHandler.self)
+				return handler
+			}
 	}
 }
 

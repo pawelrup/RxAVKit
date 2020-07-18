@@ -10,12 +10,12 @@ import AVKit
 import RxSwift
 import RxCocoa
 
-@available(iOS 11.0, tvOS 11.0, *)
+@available(iOS 11.0, *)
 extension AVRoutePickerView: HasDelegate {
 	public typealias Delegate = AVRoutePickerViewDelegate
 }
 
-@available(iOS 11.0, tvOS 11.0, *)
+@available(iOS 11.0, *)
 private class RxAVRoutePickerViewDelegateProxy: DelegateProxy<AVRoutePickerView, AVRoutePickerViewDelegate>, DelegateProxyType, AVRoutePickerViewDelegate {
 
 	public weak private (set) var view: AVRoutePickerView?
@@ -30,22 +30,24 @@ private class RxAVRoutePickerViewDelegateProxy: DelegateProxy<AVRoutePickerView,
 	}
 }
 
-@available(iOS 11.0, tvOS 11.0, *)
+@available(iOS 11.0, *)
 extension Reactive where Base: AVRoutePickerView {
 
 	public var delegate: DelegateProxy<AVRoutePickerView, AVRoutePickerViewDelegate> {
-		return RxAVRoutePickerViewDelegateProxy.proxy(for: base)
+		RxAVRoutePickerViewDelegateProxy.proxy(for: base)
 	}
 
 	/// Tells the delegate that the route picker view will start presenting routes to the user
 	public var willBeginPresentingRoutes: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVRoutePickerViewDelegate.routePickerViewWillBeginPresentingRoutes(_:)))
+		delegate
+			.methodInvoked(#selector(AVRoutePickerViewDelegate.routePickerViewWillBeginPresentingRoutes(_:)))
 			.map { _ in () }
 	}
 
 	/// Tells the delegate that the route picker view has finished presenting routes to the user.
 	public var didEndPresentingRoutes: Observable<Void> {
-		return delegate.methodInvoked(#selector(AVRoutePickerViewDelegate.routePickerViewDidEndPresentingRoutes(_:)))
+		delegate
+			.methodInvoked(#selector(AVRoutePickerViewDelegate.routePickerViewDidEndPresentingRoutes(_:)))
 			.map { _ in () }
 	}
 }

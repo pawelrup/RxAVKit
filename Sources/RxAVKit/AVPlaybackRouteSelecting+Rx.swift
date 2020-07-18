@@ -16,8 +16,8 @@ extension Reactive where Base: AVAudioSession {
 
 	@available(iOS 13.0, *)
 	public func prepareRouteSelectionForPlayback() -> Single<(Bool, AVAudioSession.RouteSelection)> {
-		return Single.create { event -> Disposable in
-			self.base.prepareRouteSelectionForPlayback { (shouldStartPlayback, routeSelection) in
+		Single.create { event in
+			base.prepareRouteSelectionForPlayback { shouldStartPlayback, routeSelection in
 				event(.success((shouldStartPlayback, routeSelection)))
 			}
 			return Disposables.create()
